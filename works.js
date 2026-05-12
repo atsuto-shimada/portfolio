@@ -40,7 +40,11 @@
   let lastDragX  = 0;
   let startDragX = 0;
   let dragMoved  = false;
+  let isExiting  = false;
+  let exitHref   = '';
+  let exitFrame  = 0;
   const DRAG_THRESHOLD = 6;
+  const EXIT_FRAMES    = 55;
 
   document.addEventListener('mousedown', e => {
     if (e.target.closest('.back')) return;
@@ -58,9 +62,15 @@
   document.addEventListener('mouseup',    () => { isDragging = false; });
   document.addEventListener('mouseleave', () => { isDragging = false; });
   document.addEventListener('click', e => {
-    if (dragMoved && e.target.closest('.work-item')) {
+    const item = e.target.closest('.work-item');
+    if (item) {
       e.preventDefault();
       e.stopPropagation();
+      if (!dragMoved && !isExiting) {
+        exitHref  = item.getAttribute('href');
+        isExiting = true;
+        exitFrame = 0;
+      }
     }
     dragMoved = false;
   }, true);
@@ -86,6 +96,18 @@
   let ef = 0;
 
   (function spin() {
+    if (isExiting) {
+      exitFrame++;
+      const t    = Math.min(exitFrame / EXIT_FRAMES, 1);
+      const ease = t * t;
+      const y    = END_Y + (-(window.innerHeight + 500) - END_Y) * ease;
+      rotY      += 0.2;
+      carousel.style.transform = `translateY(${y}px) rotateX(-5deg) rotateY(${rotY}deg)`;
+      if (t < 1) { requestAnimationFrame(spin); return; }
+      location.href = exitHref;
+      return;
+    }
+
     ef++;
     if (ef <= ENTRY) {
       const t    = ef / ENTRY;
