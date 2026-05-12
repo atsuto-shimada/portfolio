@@ -130,6 +130,11 @@ const boxes = LABELS.map(label => {
 
 let mouseX = -9999, mouseY = -9999;
 document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+document.addEventListener('touchmove', e => {
+  mouseX = e.touches[0].clientX;
+  mouseY = e.touches[0].clientY;
+}, { passive: true });
+document.addEventListener('touchend', () => { mouseX = -9999; mouseY = -9999; });
 
 function initBoxPositions() {
   boxes.forEach(box => {
@@ -386,10 +391,25 @@ tick();
       gauge.style.display = 'block';
       rafId = requestAnimationFrame(tick);
     });
+    el.addEventListener('touchstart', e => {
+      const t = e.touches[0];
+      if (!isOnGlyph(el, t.clientX, t.clientY)) return;
+      e.preventDefault();
+      pressTarget = el;
+      pressStart  = Date.now();
+      setGaugePos(t);
+      gauge.style.display = 'block';
+      rafId = requestAnimationFrame(tick);
+    }, { passive: false });
   });
 
   document.addEventListener('mouseup',   cancel);
+  document.addEventListener('touchend',  cancel);
+  document.addEventListener('touchcancel', cancel);
   document.addEventListener('mousemove', e => { if (pressTarget) setGaugePos(e); });
+  document.addEventListener('touchmove', e => {
+    if (pressTarget) setGaugePos(e.touches[0]);
+  }, { passive: true });
 
   const music = new Audio('sounds/aisiteru.mp3');
   music.volume = 0.3;

@@ -99,6 +99,14 @@
     if (e.button !== 0) return;
     if (stage === 2) holding = false;
   });
+  document.addEventListener('touchstart', e => {
+    if (finished || completing) return;
+    if (stage === 1) progress = Math.min(1, progress + S1_GAIN);
+    if (stage === 2) holding = true;
+  }, { passive: true });
+  document.addEventListener('touchend', () => {
+    if (stage === 2) holding = false;
+  }, { passive: true });
 
   // ---- ステージ遷移 ----
   function transitionToStage3() {
