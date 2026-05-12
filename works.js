@@ -94,7 +94,7 @@
       const t    = Math.min(exitFrame / EXIT_FRAMES, 1);
       const ease = t * t;
       const y    = END_Y + (-(window.innerHeight + 500) - END_Y) * ease;
-      rotY      += 0.2;
+      rotY      += 0.2 + 8 * t;
       carousel.style.transform = `translateY(${y}px) rotateX(-5deg) rotateY(${rotY}deg)`;
       if (t < 1) { requestAnimationFrame(spin); return; }
       location.href = exitHref;
