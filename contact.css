@@ -1,0 +1,119 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  color: #000;
+  font-family: 'Noto Sans JP', sans-serif;
+}
+
+.sub-nav {
+  position: fixed;
+  top: 24px;
+  left: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 10;
+}
+
+.sub-nav a {
+  font-family: 'Host Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  color: #000;
+  text-decoration: none;
+}
+
+.sub-nav a:hover {
+  opacity: 0.4;
+}
+
+.contact-wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 120px 40px 100px;
+}
+
+.contact-form {
+  width: 100%;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 0 32px;
+  padding: 24px;
+  border: 2px solid #000;
+  margin-bottom: -2px;
+  align-items: start;
+}
+
+label {
+  font-family: 'Host Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  padding-top: 5px;
+  user-select: none;
+}
+
+input,
+textarea {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 1.8;
+  color: #000;
+  resize: none;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgba(0, 0, 0, 0.25);
+}
+
+.field-row--submit {
+  border: none;
+  margin-bottom: 0;
+  padding: 28px 0 0;
+}
+
+.send-btn {
+  font-family: 'Host Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.15em;
+  color: #fff;
+  background: #000;
+  border: 2px solid #000;
+  padding: 14px 40px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.send-btn:hover {
+  background: #fff;
+  color: #000;
+}
+
+.thankyou {
+  padding-top: 80px;
+  text-align: center;
+}
+
+.thankyou-text {
+  font-family: 'Host Grotesk', sans-serif;
+  font-weight: 800;
+  font-size: 64px;
+  letter-spacing: 0.08em;
+  margin: 0;
+}

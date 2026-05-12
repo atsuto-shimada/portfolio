@@ -1,0 +1,69 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  height: 100vh;
+  overflow: hidden;
+  user-select: none;
+}
+
+.sub-nav {
+  position: fixed;
+  top: 24px;
+  left: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 10;
+}
+
+.sub-nav a {
+  font-family: 'Host Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  color: #000;
+  text-decoration: none;
+}
+
+.sub-nav a:hover {
+  opacity: 0.4;
+}
+
+.scene {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1100px;
+  perspective-origin: 50% 50%;
+  overflow: hidden;
+}
+
+.carousel {
+  transform-style: preserve-3d;
+  position: relative;
+}
+
+.work-item {
+  position: absolute;
+  width: 240px;
+  height: 340px;
+  margin-left: -120px;
+  margin-top: -170px;
+  display: block;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.work-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}

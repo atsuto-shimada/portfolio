@@ -1,0 +1,169 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  color: #000000;
+  font-family: 'Noto Sans JP', sans-serif;
+  min-height: 100vh;
+}
+
+body {
+  background-image: url('IMG_7782-2.jpg');
+  background-size: cover;
+  background-position: center -220px;
+  background-attachment: fixed;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.6);
+  z-index: 0;
+}
+
+body > * {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes bounce-stretch {
+  0%   { transform: scaleY(1)    scaleX(1); }
+  20%  { transform: scaleY(1.10) scaleX(0.93); }
+  40%  { transform: scaleY(0.92) scaleX(1.06); }
+  60%  { transform: scaleY(1.05) scaleX(0.96); }
+  80%  { transform: scaleY(0.98) scaleX(1.01); }
+  100% { transform: scaleY(1)    scaleX(1); }
+}
+
+.side-col {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.side-col img {
+  width: 220px;
+  display: block;
+  opacity: 0.85;
+  margin-bottom: -60px;
+  transform-origin: center bottom;
+  animation: bounce-stretch 1.6s ease-in-out infinite;
+}
+
+.side-col img:nth-child(2) { animation-delay: -0.5s; }
+.side-col img:nth-child(3) { animation-delay: -1.0s; }
+
+.side-col--left  { left: 0; }
+.side-col--right { right: 0; transform: translateY(-50%) scaleX(-1); }
+
+.sub-nav {
+  position: fixed;
+  top: 24px;
+  left: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 10;
+}
+
+.sub-nav a {
+  font-family: 'Host Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  color: #000;
+  text-decoration: none;
+}
+
+.sub-nav a:hover {
+  opacity: 0.4;
+}
+
+.profile-wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 40px;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+/* NAME */
+.name-block {
+  margin-bottom: 72px;
+  padding-bottom: 48px;
+  display: flex;
+  align-items: baseline;
+  gap: 24px;
+}
+
+.name-kana {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 900;
+  font-size: 48px;
+  margin: 0 0 16px;
+  letter-spacing: 0.05em;
+}
+
+.name-kanji {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 400;
+  font-size: 20px;
+  margin: 0 0 16px;
+  letter-spacing: 0.1em;
+  color: #555;
+}
+
+.name-roman {
+  font-family: 'Host Grotesk', sans-serif;
+  font-weight: 300;
+  font-size: 16px;
+  margin: 0;
+  letter-spacing: 0.2em;
+  color: #555;
+}
+
+/* INFO LIST */
+.info {
+  margin: 0;
+  padding: 0;
+}
+
+.info-row {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 0 32px;
+  padding: 20px 0;
+  border-bottom: 1px solid #000000;
+  align-items: baseline;
+}
+
+.info-row:first-child {
+  border-top: 1px solid #000000;
+}
+
+dt {
+  font-family: 'Host Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  color: #000;
+  padding-top: 3px;
+}
+
+dd {
+  margin: 0;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 1.8;
+}

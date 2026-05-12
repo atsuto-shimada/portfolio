@@ -1,0 +1,105 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  color: #000;
+  font-family: 'Host Grotesk', sans-serif;
+  overflow: hidden;
+}
+
+.sub-nav {
+  position: fixed;
+  top: 24px;
+  left: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 11;
+}
+
+.sub-nav a {
+  font-family: 'Host Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  color: #000;
+  text-decoration: none;
+}
+
+.sub-nav a:hover {
+  opacity: 0.4;
+}
+
+.stage {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gallery {
+  --cell: min(calc((100vw - 80px) / 4), calc((100vh - 80px) / 3));
+  display: grid;
+  grid-template-columns: repeat(4, var(--cell));
+  grid-template-rows: repeat(3, var(--cell));
+  gap: 6px;
+}
+
+.img-wrap {
+  width: var(--cell);
+  height: var(--cell);
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.work-title {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  margin: 0;
+  font-family: 'Host Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 17px;
+  letter-spacing: 0.08em;
+  color: #000;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.lightbox.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.lightbox img {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  display: block;
+}
