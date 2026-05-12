@@ -130,5 +130,3 @@ document.querySelector('.sub-nav a[href="index.html"]')?.addEventListener('click
     setTimeout(() => { location.href = 'index.html?fade=1'; }, 360);
   }));
 });
-
-window.addEventListener('pageshow', e => { if (e.persisted) location.reload(); });

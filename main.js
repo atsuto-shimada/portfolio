@@ -119,10 +119,7 @@ const boxes = LABELS.map(label => {
             const sc  = 1 + e * 28;
             el.style.transform = `translate(${x}px,${y}px) rotate(${rot}deg) scale(${sc})`;
             if (zf < ZOOM) requestAnimationFrame(zoom);
-            else {
-              document.documentElement.style.visibility = 'hidden';
-              requestAnimationFrame(() => { location.href = HREFS[label]; });
-            }
+            else location.href = HREFS[label];
           })();
         }
       })();
@@ -495,9 +492,3 @@ tick();
     }
   }
 })();
-
-window.addEventListener('unload', () => {});
-window.addEventListener('pageshow', e => {
-  document.documentElement.style.visibility = '';
-  if (e.persisted) location.reload();
-});
