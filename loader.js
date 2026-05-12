@@ -129,8 +129,8 @@
     s3input.setAttribute('autocorrect', 'off');
     s3input.setAttribute('autocapitalize', 'off');
     s3input.style.cssText = [
-      'position:fixed', 'top:50%', 'left:50%',
-      'width:1px', 'height:1px',
+      'position:fixed', 'top:0', 'left:0',
+      'width:100vw', 'height:100vh',
       'opacity:0.001',
       'border:none', 'outline:none',
       'background:transparent', 'color:transparent', 'caret-color:transparent',
