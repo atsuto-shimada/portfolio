@@ -149,7 +149,8 @@
           finish();
         });
       } else {
-        if (frame % 4 === 0) progress = Math.max(0, progress - S1_DRAIN);
+        const scale = Math.min(frame / 300, 1);
+        progress = Math.max(0, progress - S1_DRAIN * scale / 4);
         pctEl.textContent = Math.floor(progress * 100) + '%';
       }
     }
