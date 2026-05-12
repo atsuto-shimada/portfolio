@@ -49,6 +49,21 @@
 }
 
 
+#loader-input {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: transparent;
+  caret-color: transparent;
+  touch-action: auto;
+}
+
 #loader-complete {
   position: absolute;
   top: 50%;

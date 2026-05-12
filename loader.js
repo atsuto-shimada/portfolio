@@ -62,7 +62,6 @@
     pctEl.style.color      = c;
     completeEl.style.color = c;
     hintEl.style.color     = c;
-    if (stage === 3) pctEl.style.caretColor = caretVisible ? c : 'transparent';
   }
 
   function getOverall() {
@@ -101,6 +100,10 @@
   });
   document.addEventListener('touchstart', e => {
     if (finished || completing) return;
+    if (stage === 3) {
+      document.getElementById('loader-input').focus();
+      return;
+    }
     e.preventDefault();
     if (stage === 1) progress = Math.min(1, progress + S1_GAIN);
     if (stage === 2) holding = true;
@@ -116,22 +119,25 @@
   function transitionToStage3() {
     stage = 3;
     progress = 0;
-    pctEl.textContent      = '0%';
-    pctEl.contentEditable  = 'true';
-    pctEl.style.outline    = 'none';
-    pctEl.style.caretColor = 'transparent';
-    caretVisible = false;
-    caretTimer = setTimeout(() => { caretVisible = true; }, 6000);
-    pctEl.addEventListener('input', function onInput() {
-      const val = pctEl.textContent.trim().replace('%', '').trim();
+    pctEl.textContent = '0%';
+    pctEl.style.outline = 'none';
+
+    const hiddenInput = document.getElementById('loader-input');
+    hiddenInput.value = '';
+
+    hiddenInput.addEventListener('input', function onInput() {
+      const val = hiddenInput.value.replace(/\D/g, '');
+      hiddenInput.value = val;
+      pctEl.textContent = (val || '0') + '%';
       if (val === '100') {
-        pctEl.removeEventListener('input', onInput);
-        pctEl.contentEditable = 'false';
+        hiddenInput.removeEventListener('input', onInput);
+        hiddenInput.blur();
         stage3Success = true;
       }
     });
-    setTimeout(() => pctEl.focus(), 0);
-    scheduleHint('入力', 6000);
+
+    setTimeout(() => hiddenInput.focus(), 100);
+    scheduleHint('入力', 2000);
   }
 
   function finish() {
