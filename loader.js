@@ -9,8 +9,8 @@
     return;
   }
 
-  const S1_GAIN  = 0.1;
-  const S1_DRAIN = 0.001;
+  const S1_GAIN  = 0.046;
+  const S1_DRAIN = 0.009;
 
   let progress   = 0;
   let finished   = false;
@@ -136,8 +136,10 @@
   }
 
   // ---- メインループ ----
+  let frame = 0;
   function draw() {
     if (finished) return;
+    frame++;
 
     if (!completing) {
       if (progress >= 1) {
@@ -147,7 +149,7 @@
           finish();
         });
       } else {
-        progress = Math.max(0, progress - S1_DRAIN);
+        if (frame % 6 === 0) progress = Math.max(0, progress - S1_DRAIN);
         pctEl.textContent = Math.floor(progress * 100) + '%';
       }
     }
