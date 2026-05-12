@@ -55,7 +55,8 @@
           setTimeout(() => { location.href = 'index.html?fade=1'; }, 360);
         }));
       } else {
-        disassemble(() => { location.href = e.currentTarget.href; });
+        const dest = raw === 'works.html' ? 'works.html?direct=1' : e.currentTarget.href;
+        disassemble(() => { location.href = dest; });
       }
     });
   });

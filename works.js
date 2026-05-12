@@ -67,15 +67,16 @@
   const ENTRY   = 160;
   const START_Y = -(window.innerHeight + 600);
   const END_Y   = -40;
-  let ef = 0;
+  const skipEntry = new URLSearchParams(location.search).get('direct') === '1';
+  let ef = skipEntry ? ENTRY : 0;
 
   (function spin() {
     ef++;
     if (ef <= ENTRY) {
       const t    = ef / ENTRY;
-      const ease = 1 - Math.pow(1 - t, 4);          // quartic ease-out: 急速→ゆっくり着地
+      const ease = 1 - Math.pow(1 - t, 4);
       const y    = START_Y + (END_Y - START_Y) * ease;
-      rotY      += 8 * (1 - t) + 0.2;               // 最初8°/frame → 徐々に0.2°/frameへ線形減速
+      rotY      += 8 * (1 - t) + 0.2;
       carousel.style.transform = `translateY(${y}px) rotateX(-5deg) rotateY(${rotY}deg)`;
     } else {
       rotY += 0.2;
@@ -84,10 +85,6 @@
     requestAnimationFrame(spin);
   })();
 })();
-
-window.addEventListener('pageshow', e => {
-  if (e.persisted) location.reload();
-});
 
 document.querySelector('.sub-nav a[href="index.html"]')?.addEventListener('click', e => {
   e.preventDefault();
