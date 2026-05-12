@@ -79,3 +79,5 @@
     if (e.key === 'Escape') lightbox.classList.remove('open');
   });
 })();
+
+window.addEventListener('pageshow', e => { if (e.persisted) location.reload(); });
