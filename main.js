@@ -31,7 +31,7 @@ async function fitText() {
 fitText();
 window.addEventListener('resize', fitText);
 
-if (sessionStorage.getItem('loaderShown') && new URLSearchParams(location.search).get('fade') === '1') {
+if (new URLSearchParams(location.search).get('fade') === '1') {
   document.body.style.opacity = '0';
   document.fonts.ready.then(() => {
     setTimeout(() => {
@@ -54,7 +54,6 @@ const CRUISE_SPEED = 0.8;
 const DAMPING      = 0.97;
 
 const HREFS = { PROFILE: 'profile.html', WORKS: 'works.html', CONTACT: 'https://docs.google.com/forms/d/e/1FAIpQLScGWggfx-XI5iAqtZNB_iRvf7DIoArWMKtYYxsC5hBf22Harw/viewform?usp=header' };
-const loaderPresent = !sessionStorage.getItem('loaderShown');
 
 const boxes = LABELS.map(label => {
   const el = document.createElement('div');
@@ -169,35 +168,12 @@ function initBoxPositions() {
       box.y = Math.random() * (window.innerHeight - box.h);
     }
     box.el.style.transform = `translate(${box.x}px,${box.y}px) rotate(0deg) scale(1)`;
-    if (!loaderPresent) box.el.style.visibility = 'visible';
+    box.el.style.visibility = 'visible';
   });
 }
 
 document.fonts.ready.then(() => requestAnimationFrame(initBoxPositions));
 
-document.addEventListener('loaderAssemblyDone', () => {
-  boxes.forEach(box => {
-    const rx = (Math.random() - 0.5) * window.innerWidth  * 2.5;
-    const ry = (Math.random() - 0.5) * window.innerHeight * 2.5;
-    const rr = (Math.random() - 0.5) * 360;
-    box.frozen = true;
-    box.el.style.transform  = `translate(${box.x + rx}px,${box.y + ry}px) rotate(${rr}deg)`;
-    box.el.style.opacity     = '0';
-    box.el.style.visibility  = 'visible';
-  });
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    boxes.forEach((box, i) => {
-      setTimeout(() => {
-        box.el.style.transition = 'transform 0.65s cubic-bezier(0.22,1,0.36,1), opacity 0.35s ease';
-        box.el.style.transform  = `translate(${box.x}px,${box.y}px) rotate(0deg)`;
-        box.el.style.opacity    = '1';
-      }, i * 120);
-    });
-    setTimeout(() => {
-      boxes.forEach(box => { box.el.style.transition = ''; box.frozen = false; });
-    }, boxes.length * 120 + 700);
-  }));
-});
 
 function tick() {
   speedMult += (targetSpeedMult - speedMult) * 0.025;
