@@ -39,10 +39,13 @@ window.__loaderActive = !sessionStorage.getItem('loaderDone');
   let lastTime = null;
   function decayLoop(now) {
     if (done) return;
-    if (lastTime !== null) {
+    if (lastTime !== null && percent > 0) {
       const dt = (now - lastTime) / 1000;
-      percent = Math.max(0, percent - DECAY_RATE * dt);
-      update();
+      const next = Math.max(0, percent - DECAY_RATE * dt);
+      if (next !== percent) {
+        percent = next;
+        update();
+      }
     }
     lastTime = now;
     requestAnimationFrame(decayLoop);

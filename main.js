@@ -71,7 +71,7 @@ const boxes = LABELS.map(label => {
                 rotation: 0, scale: 1, shakeX: 0, shakeY: 0, behavior: null, behaviorTimer: 0, behaviorDuration: 1, behaviorData: {}, frozen: false };
   if (HREFS[label]) {
     el.addEventListener('click', () => {
-      if (box.frozen) return;
+      if (box.frozen || box.entryAnimating) return;
       box.frozen = true;
       el.style.zIndex = '20';
 
