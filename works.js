@@ -26,6 +26,13 @@
     a.href      = work.href;
     a.className = 'work-item';
     a.style.transform = `rotateY(${angle}deg) translateZ(${RADIUS}px)`;
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      if (dragMoved || isExiting) return;
+      exitHref  = work.href;
+      isExiting = true;
+      exitFrame = 0;
+    });
     const img = document.createElement('img');
     img.src      = work.img;
     img.alt      = '';
@@ -59,22 +66,8 @@
     rotY     += (e.clientX - lastDragX) * 0.3;
     lastDragX  = e.clientX;
   });
-  document.addEventListener('mouseup',    () => { isDragging = false; });
+  document.addEventListener('mouseup',    () => { isDragging = false; setTimeout(() => { dragMoved = false; }, 0); });
   document.addEventListener('mouseleave', () => { isDragging = false; });
-  document.addEventListener('click', e => {
-    const item = e.target.closest('.work-item');
-    if (item) {
-      e.preventDefault();
-      e.stopPropagation();
-      if (!dragMoved && !isExiting) {
-        exitHref  = item.getAttribute('href');
-        isExiting = true;
-        exitFrame = 0;
-      }
-    }
-    dragMoved = false;
-  }, true);
-
   document.addEventListener('touchstart', e => {
     isDragging = true;
     dragMoved  = false;
@@ -87,7 +80,7 @@
     rotY     += (e.touches[0].clientX - lastDragX) * 0.3;
     lastDragX  = e.touches[0].clientX;
   }, { passive: true });
-  document.addEventListener('touchend', () => { isDragging = false; });
+  document.addEventListener('touchend', () => { isDragging = false; setTimeout(() => { dragMoved = false; }, 0); });
 
   const direct  = new URLSearchParams(location.search).get('direct') === '1';
   const ENTRY   = direct ? 70 : 160;
