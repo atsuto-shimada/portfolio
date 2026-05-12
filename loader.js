@@ -136,7 +136,7 @@
       'background:transparent', 'color:transparent', 'caret-color:transparent',
       'font-size:16px',
       '-webkit-appearance:none', 'appearance:none',
-      'touch-action:auto'
+      'touch-action:auto', 'z-index:1'
     ].join(';');
     loader.appendChild(s3input);
 
