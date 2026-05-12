@@ -1,19 +1,19 @@
 (function () {
   // ---- Carousel ----
   const WORKS = [
-    { img: 'images/ito.png',      href: 'ito.html' },
-    { img: 'images/jenga.png',    href: 'jenga.html' },
-    { img: 'images/nanicore.png', href: 'nanicore.html' },
-    { img: 'images/paple.png',    href: 'paple.html' },
-    { img: 'images/safe.png',     href: 'safe.html' },
-    { img: 'images/shoukan.png',  href: 'shoukan.html' },
-    { img: 'images/zokei.png',    href: 'zokei.html' },
-    { img: 'images/gum.png',      href: 'gum.html' },
-    { img: 'images/denki.png',    href: 'denki.html' },
-    { img: 'images/breimen.png',  href: 'breimen.html' },
-    { img: 'images/av.png',       href: 'av.html' },
-    { img: 'images/alphabet.png', href: 'alphabet.html' },
-    { img: 'images/aidol.png',    href: 'aidol.html' },
+    { img: 'images/ito.webp',      href: 'ito.html' },
+    { img: 'images/jenga.webp',    href: 'jenga.html' },
+    { img: 'images/nanicore.webp', href: 'nanicore.html' },
+    { img: 'images/paple.webp',    href: 'paple.html' },
+    { img: 'images/safe.webp',     href: 'safe.html' },
+    { img: 'images/shoukan.webp',  href: 'shoukan.html' },
+    { img: 'images/zokei.webp',    href: 'zokei.html' },
+    { img: 'images/gum.webp',      href: 'gum.html' },
+    { img: 'images/denki.webp',    href: 'denki.html' },
+    { img: 'images/breimen.webp',  href: 'breimen.html' },
+    { img: 'images/av.webp',       href: 'av.html' },
+    { img: 'images/alphabet.webp', href: 'alphabet.html' },
+    { img: 'images/aidol.webp',    href: 'aidol.html' },
   ];
 
   const N      = WORKS.length;
