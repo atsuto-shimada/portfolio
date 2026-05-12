@@ -101,10 +101,14 @@
   });
   document.addEventListener('touchstart', e => {
     if (finished || completing) return;
+    e.preventDefault();
     if (stage === 1) progress = Math.min(1, progress + S1_GAIN);
     if (stage === 2) holding = true;
-  }, { passive: true });
+  }, { passive: false });
   document.addEventListener('touchend', () => {
+    if (stage === 2) holding = false;
+  }, { passive: true });
+  document.addEventListener('touchcancel', () => {
     if (stage === 2) holding = false;
   }, { passive: true });
 
