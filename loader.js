@@ -20,6 +20,7 @@
   let finished      = false;
   let stage3Success = false;
   let completing    = false;
+  let s3input       = null;
 
   // ---- ヒント ----
   let hintTimer    = null;
@@ -100,15 +101,13 @@
   });
   document.addEventListener('touchstart', e => {
     if (finished || completing) return;
-    if (stage === 3) {
-      document.getElementById('loader-input').focus();
-      return;
-    }
+    if (stage === 3) return;
     e.preventDefault();
     if (stage === 1) progress = Math.min(1, progress + S1_GAIN);
     if (stage === 2) holding = true;
   }, { passive: false });
   document.addEventListener('touchend', () => {
+    if (stage === 3 && s3input) { s3input.focus(); }
     if (stage === 2) holding = false;
   }, { passive: true });
   document.addEventListener('touchcancel', () => {
@@ -121,23 +120,40 @@
     progress = 0;
     pctEl.textContent = '0%';
     pctEl.style.outline = 'none';
+    loader.style.touchAction = 'auto';
 
-    const hiddenInput = document.getElementById('loader-input');
-    hiddenInput.value = '';
+    s3input = document.createElement('input');
+    s3input.type = 'tel';
+    s3input.setAttribute('inputmode', 'numeric');
+    s3input.setAttribute('autocomplete', 'off');
+    s3input.setAttribute('autocorrect', 'off');
+    s3input.setAttribute('autocapitalize', 'off');
+    s3input.style.cssText = [
+      'position:fixed', 'top:50%', 'left:50%',
+      'width:1px', 'height:1px',
+      'opacity:0.001',
+      'border:none', 'outline:none',
+      'background:transparent', 'color:transparent', 'caret-color:transparent',
+      'font-size:16px',
+      '-webkit-appearance:none', 'appearance:none',
+      'touch-action:auto'
+    ].join(';');
+    loader.appendChild(s3input);
 
-    hiddenInput.addEventListener('input', function onInput() {
-      const val = hiddenInput.value.replace(/\D/g, '');
-      hiddenInput.value = val;
+    s3input.addEventListener('input', function onInput() {
+      const val = s3input.value.replace(/\D/g, '');
+      s3input.value = val;
       pctEl.textContent = (val || '0') + '%';
       if (val === '100') {
-        hiddenInput.removeEventListener('input', onInput);
-        hiddenInput.style.pointerEvents = 'none';
-        hiddenInput.blur();
+        s3input.removeEventListener('input', onInput);
+        s3input.blur();
+        s3input.remove();
+        s3input = null;
+        loader.style.touchAction = 'none';
         stage3Success = true;
       }
     });
 
-    hiddenInput.style.pointerEvents = 'auto';
     scheduleHint('入力', 2000);
   }
 
