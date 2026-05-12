@@ -131,12 +131,13 @@
       pctEl.textContent = (val || '0') + '%';
       if (val === '100') {
         hiddenInput.removeEventListener('input', onInput);
+        hiddenInput.style.pointerEvents = 'none';
         hiddenInput.blur();
         stage3Success = true;
       }
     });
 
-    setTimeout(() => hiddenInput.focus(), 100);
+    hiddenInput.style.pointerEvents = 'auto';
     scheduleHint('入力', 2000);
   }
 

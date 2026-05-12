@@ -51,16 +51,16 @@
 
 #loader-input {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  width: 1px;
-  height: 1px;
+  inset: 0;
   opacity: 0;
   border: none;
   outline: none;
   background: transparent;
   color: transparent;
   caret-color: transparent;
+  font-size: 16px;
+  pointer-events: none;
+  z-index: 10000;
   touch-action: auto;
 }
 
