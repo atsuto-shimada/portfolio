@@ -500,4 +500,7 @@ tick();
 })();
 
 window.addEventListener('unload', () => {});
+window.addEventListener('pagehide', e => {
+  if (e.persisted) document.documentElement.style.visibility = 'hidden';
+});
 window.addEventListener('pageshow', e => { if (e.persisted) location.reload(); });
