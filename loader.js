@@ -141,8 +141,9 @@
     loader.appendChild(s3input);
 
     s3input.addEventListener('input', function onInput() {
-      const val = s3input.value.replace(/\D/g, '');
-      s3input.value = val;
+      const raw = s3input.value;
+      const val = raw.replace(/\D/g, '');
+      if (raw !== val) s3input.value = val;
       pctEl.textContent = (val || '0') + '%';
       if (val === '100') {
         s3input.removeEventListener('input', onInput);
