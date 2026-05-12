@@ -64,11 +64,11 @@
   }, { passive: true });
   document.addEventListener('touchend', () => { isDragging = false; });
 
-  const ENTRY   = 160;
-  const START_Y = -(window.innerHeight + 600);
+  const direct  = new URLSearchParams(location.search).get('direct') === '1';
+  const ENTRY   = direct ? 70 : 160;
+  const START_Y = direct ? -(window.innerHeight / 2 + 220) : -(window.innerHeight + 600);
   const END_Y   = -40;
-  const skipEntry = new URLSearchParams(location.search).get('direct') === '1';
-  let ef = skipEntry ? ENTRY : 0;
+  let ef = 0;
 
   (function spin() {
     ef++;
