@@ -9,8 +9,8 @@
     return;
   }
 
-  const S1_GAIN  = 0.06;
-  const S1_DRAIN = 0.003;
+  const S1_GAIN  = 0.1;
+  const S1_DRAIN = 0.001;
 
   let progress   = 0;
   let finished   = false;
