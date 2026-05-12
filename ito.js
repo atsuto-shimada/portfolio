@@ -71,8 +71,7 @@
     });
   });
 
-  lightbox.addEventListener('click', e => {
-    if (e.target.closest('.lightbox-link')) return;
+  lightbox.addEventListener('click', () => {
     lightbox.classList.remove('open');
   });
   document.addEventListener('keydown', e => {
