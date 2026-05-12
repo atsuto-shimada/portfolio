@@ -20,19 +20,23 @@
   const RADIUS = 500;
   const carousel = document.querySelector('.carousel');
 
+  function startExit(href) {
+    if (dragMoved || isExiting) return;
+    exitHref  = href;
+    isExiting = true;
+    exitFrame = 0;
+  }
+
   WORKS.forEach((work, i) => {
     const angle = (i / N) * 360;
     const a = document.createElement('a');
-    a.href      = work.href;
     a.className = 'work-item';
     a.style.transform = `rotateY(${angle}deg) translateZ(${RADIUS}px)`;
-    a.addEventListener('click', e => {
+    a.addEventListener('click',    () => startExit(work.href));
+    a.addEventListener('touchend', e => {
       e.preventDefault();
-      if (dragMoved || isExiting) return;
-      exitHref  = work.href;
-      isExiting = true;
-      exitFrame = 0;
-    });
+      startExit(work.href);
+    }, { passive: false });
     const img = document.createElement('img');
     img.src      = work.img;
     img.alt      = '';
@@ -94,7 +98,7 @@
       const t    = Math.min(exitFrame / EXIT_FRAMES, 1);
       const ease = t * t;
       const y    = END_Y + (-(window.innerHeight + 500) - END_Y) * ease;
-      rotY      += 0.2 + 8 * t;
+      rotY      += 1 + 12 * t;
       carousel.style.transform = `translateY(${y}px) rotateX(-5deg) rotateY(${rotY}deg)`;
       if (t < 1) { requestAnimationFrame(spin); return; }
       location.href = exitHref;

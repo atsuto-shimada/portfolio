@@ -42,7 +42,6 @@ html, body {
   justify-content: center;
   perspective: 1100px;
   perspective-origin: 50% 50%;
-  overflow: hidden;
 }
 
 .carousel {
