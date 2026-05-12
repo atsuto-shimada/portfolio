@@ -31,6 +31,8 @@ async function fitText() {
 
   el.style.top = `${-topGap * scaleY}px`;
   el.style.transform = `scaleX(${scaleX}) scaleY(${scaleY})`;
+  window._textScaleX = scaleX;
+  window._textScaleY = scaleY;
 }
 
 fitText();
@@ -161,13 +163,13 @@ function initBoxPositions() {
     box.el.style.width = `${maxW}px`;
     box.w = maxW;
   });
-  boxes.forEach(box => {
+  boxes.forEach((box, idx) => {
     const maxAttempts = 50;
     let placed = false;
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       const tx = Math.random() * (window.innerWidth  - box.w);
       const ty = Math.random() * (window.innerHeight - box.h);
-      const overlap = boxes.some(other => other.el.style.visibility === 'visible' && (
+      const overlap = boxes.slice(0, idx).some(other => (
         tx < other.x + other.w + 20 && tx + box.w + 20 > other.x &&
         ty < other.y + other.h + 20 && ty + box.h + 20 > other.y
       ));
@@ -188,7 +190,9 @@ function initBoxPositions() {
 
 document.fonts.ready.then(() => requestAnimationFrame(() => {
   initBoxPositions();
-  window.triggerEntryAnimation();
+  if (!window.__loaderActive) {
+    window.triggerEntryAnimation();
+  }
 }));
 
 
@@ -487,9 +491,11 @@ tick();
 })();
 
 window.triggerEntryAnimation = function () {
-  // テキストの文字を個別 span に分割してバラバラ集合アニメーション
+  // テキストの文字を個別 span に分割して画面外から集合アニメーション
   const textEl = document.querySelector('.text');
   if (textEl) {
+    textEl.style.opacity = '';
+
     Array.from(textEl.childNodes).forEach(node => {
       if (node.nodeType !== Node.TEXT_NODE) return;
       const chars = node.textContent.split('').filter(c => c.trim());
@@ -504,31 +510,64 @@ window.triggerEntryAnimation = function () {
     textEl.querySelectorAll('span').forEach(s => { s.style.display = 'inline-block'; });
 
     const allSpans = Array.from(textEl.querySelectorAll('span'));
-    const spread = Math.max(window.innerWidth, window.innerHeight) * 3;
+    const sX = window._textScaleX || 1;
+    const sY = window._textScaleY || 1;
+    const w  = window.innerWidth;
+    const h  = window.innerHeight;
+    const MARGIN = 260;
+    const dirs = ['left', 'right', 'top', 'bottom', 'top-left', 'top-right', 'bottom-left', 'bottom-right'];
 
-    allSpans.forEach(span => {
-      const rx = (Math.random() - 0.5) * spread;
-      const ry = (Math.random() - 0.5) * spread;
-      const rr = (Math.random() - 0.5) * 360;
-      span.style.transform = `translate(${rx}px,${ry}px) rotate(${rr}deg)`;
+    // 自然配置のままスクリーン座標を取得
+    const naturalRects = allSpans.map(s => s.getBoundingClientRect());
+
+    // 各文字のローカル空間での出発点を計算
+    const startTransforms = allSpans.map((span, i) => {
+      const nr  = naturalRects[i];
+      const nsx = nr.left + nr.width  / 2;
+      const nsy = nr.top  + nr.height / 2;
+      const dir = dirs[Math.floor(Math.random() * dirs.length)];
+
+      const offL = -MARGIN;
+      const offR = w + MARGIN;
+      const offT = -MARGIN;
+      const offB = h + MARGIN;
+      const midX = nsx + (Math.random() - 0.5) * w * 0.3;
+      const midY = nsy + (Math.random() - 0.5) * h * 0.3;
+
+      let startSx, startSy;
+      if      (dir === 'left')         { startSx = offL; startSy = midY; }
+      else if (dir === 'right')        { startSx = offR; startSy = midY; }
+      else if (dir === 'top')          { startSx = midX; startSy = offT; }
+      else if (dir === 'bottom')       { startSx = midX; startSy = offB; }
+      else if (dir === 'top-left')     { startSx = offL; startSy = offT; }
+      else if (dir === 'top-right')    { startSx = offR; startSy = offT; }
+      else if (dir === 'bottom-left')  { startSx = offL; startSy = offB; }
+      else                             { startSx = offR; startSy = offB; }
+
+      return {
+        tx:  (startSx - nsx) / sX,
+        ty:  (startSy - nsy) / sY,
+        rot: (Math.random() - 0.5) * 50,
+      };
+    });
+
+    allSpans.forEach((span, i) => {
+      const { tx, ty, rot } = startTransforms[i];
+      span.style.transform = `translate(${tx}px,${ty}px) rotate(${rot}deg)`;
       span.style.opacity = '0';
     });
 
     requestAnimationFrame(() => requestAnimationFrame(() => {
-      allSpans.forEach((span, i) => {
-        setTimeout(() => {
-          span.style.transition = 'transform 0.65s cubic-bezier(0.22,1,0.36,1), opacity 0.35s ease';
-          span.style.transform  = 'none';
-          span.style.opacity    = '1';
-        }, i * 60);
+      allSpans.forEach(span => {
+        span.style.transition = 'transform 0.65s cubic-bezier(0.22,1,0.36,1), opacity 0.35s ease';
+        span.style.transform  = 'none';
+        span.style.opacity    = '1';
       });
       setTimeout(() => {
         allSpans.forEach(span => { span.style.transition = ''; });
-      }, allSpans.length * 60 + 700);
+      }, 750);
     }));
   }
-
-  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
   function animateBoxes() {
     if (!boxes[0] || !boxes[0].w) {
@@ -536,51 +575,34 @@ window.triggerEntryAnimation = function () {
       return;
     }
 
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-    const bw = boxes[0].w;
-    const bh = boxes[0].h;
-
-    // 各 nav box の飛び込み出発点（左・上・右の3辺から）
-    const starts = [
-      { x: -bw - 300, y: h * 0.2 + Math.random() * h * 0.6, rot: -30 },
-      { x: w * 0.2 + Math.random() * w * 0.6, y: -bh - 300, rot: 25 },
-      { x: w + 300,   y: h * 0.2 + Math.random() * h * 0.6, rot: -20 },
-    ];
+    const DURATION = 800;
+    const STAGGER  = 250;
 
     boxes.forEach((box, i) => {
-      const start = starts[i % starts.length];
       const finalX = box.x;
       const finalY = box.y;
-      const delay = i * 160;
-      const duration = 850;
 
       box.entryAnimating = true;
-      box.el.style.transform = `translate(${start.x}px,${start.y}px) rotate(${start.rot}deg) scale(1)`;
+      box.el.style.opacity    = '0';
+      box.el.style.transform  = `translate(${finalX}px,${finalY}px) rotate(0deg) scale(1)`;
       box.el.style.visibility = 'visible';
 
       setTimeout(() => {
-        const t0 = performance.now();
-        (function step(now) {
-          const p = Math.min((now - t0) / duration, 1);
-          const e = easeOutCubic(p);
-          const x = start.x + (finalX - start.x) * e;
-          const y = start.y + (finalY - start.y) * e;
-          const rot = start.rot * (1 - e);
-          box.el.style.transform = `translate(${x}px,${y}px) rotate(${rot}deg) scale(1)`;
-          if (p < 1) {
-            requestAnimationFrame(step);
-          } else {
-            box.x = finalX;
-            box.y = finalY;
-            box.entryAnimating = false;
-          }
-        })(performance.now());
-      }, delay);
+        box.el.style.transition = `opacity ${DURATION}ms ease`;
+        box.el.style.opacity    = '1';
+
+        setTimeout(() => {
+          box.el.style.transition = '';
+          box.el.style.opacity    = '';
+          box.x = finalX;
+          box.y = finalY;
+          box.entryAnimating = false;
+        }, DURATION + 50);
+      }, 50 + i * STAGGER);
     });
   }
 
-  animateBoxes();
+  setTimeout(animateBoxes, 900);
 };
 
 window.addEventListener('pageshow', e => {

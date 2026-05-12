@@ -12,7 +12,7 @@ window.__loaderActive = !sessionStorage.getItem('loaderDone');
   const percentEl = document.getElementById('loader-percent');
   let percent = 0;
   let done = false;
-  const DECAY_RATE = 8; // %/秒で減少
+  const DECAY_RATE = 15; // %/秒で減少
 
   function update() {
     const t = percent / 100;
@@ -25,7 +25,7 @@ window.__loaderActive = !sessionStorage.getItem('loaderDone');
 
   function increment() {
     if (done) return;
-    percent = Math.min(100, percent + 3 + Math.random() * 7);
+    percent = Math.min(100, percent + 3 + Math.random() * 3);
     if (percent >= 100) {
       done = true;
       update();
