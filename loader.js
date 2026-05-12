@@ -13,6 +13,7 @@
   const S1_DRAIN = 0.004;
 
   let progress   = 0;
+  let fillBuffer = 0;
   let finished   = false;
   let completing = false;
 
@@ -77,12 +78,12 @@
   // ---- イベント ----
   document.addEventListener('mousedown', e => {
     if (finished || completing || e.button !== 0) return;
-    progress = Math.min(1, progress + S1_GAIN);
+    fillBuffer = Math.min(fillBuffer + S1_GAIN, 0.5);
   });
   document.addEventListener('touchstart', e => {
     if (finished || completing) return;
     e.preventDefault();
-    progress = Math.min(1, progress + S1_GAIN);
+    fillBuffer = Math.min(fillBuffer + S1_GAIN, 0.5);
   }, { passive: false });
 
   // ---- finish ----
@@ -149,6 +150,9 @@
           finish();
         });
       } else {
+        const fill = Math.min(fillBuffer, S1_DRAIN * 0.75);
+        fillBuffer -= fill;
+        progress = Math.min(1, progress + fill);
         const scale = Math.min(frame / 240, 1);
         progress = Math.max(0, progress - S1_DRAIN * scale / 2.5);
         pctEl.textContent = Math.floor(progress * 100) + '%';
