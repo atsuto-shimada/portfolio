@@ -149,8 +149,8 @@
           finish();
         });
       } else {
-        const scale = Math.min(frame / 300, 1);
-        progress = Math.max(0, progress - S1_DRAIN * scale / 4);
+        const scale = Math.min(frame / 240, 1);
+        progress = Math.max(0, progress - S1_DRAIN * scale / 2.5);
         pctEl.textContent = Math.floor(progress * 100) + '%';
       }
     }
