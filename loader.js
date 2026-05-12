@@ -11,25 +11,17 @@
 
   const S1_GAIN  = 0.048;
   const S1_DRAIN = 0.0028;
-  const S2_FILL  = 0.0022;
-  const S2_DRAIN = 0.004;
 
-  let stage         = 1;
-  let progress      = 0;
-  let holding       = false;
-  let finished      = false;
-  let stage3Success = false;
-  let completing    = false;
-  let s3input       = null;
+  let progress   = 0;
+  let finished   = false;
+  let completing = false;
 
   // ---- ヒント ----
-  let hintTimer    = null;
-  let hintVisible  = false;
-  let caretTimer   = null;
-  let caretVisible = false;
+  let hintTimer   = null;
+  let hintVisible = false;
 
   function showHint(html) {
-    hintEl.innerHTML    = html;
+    hintEl.innerHTML     = html;
     hintEl.style.display = 'block';
     requestAnimationFrame(() => requestAnimationFrame(() => {
       hintEl.style.transition = 'opacity 0.5s ease';
@@ -40,9 +32,7 @@
 
   function hideHint() {
     clearTimeout(hintTimer);
-    clearTimeout(caretTimer);
     hintTimer = null;
-    caretTimer = null;
     if (!hintVisible) { hintEl.style.display = 'none'; return; }
     hintEl.style.transition = 'opacity 0.3s ease';
     hintEl.style.opacity    = '0';
@@ -56,8 +46,8 @@
   }
 
   // ---- 色・背景 ----
-  function applyProgress(overall) {
-    const b = Math.round(255 * Math.min(overall, 1));
+  function applyProgress(p) {
+    const b = Math.round(255 * Math.min(p, 1));
     loader.style.backgroundColor = `rgb(${b},${b},${b})`;
     const c = `rgb(${255 - b},${255 - b},${255 - b})`;
     pctEl.style.color      = c;
@@ -65,12 +55,8 @@
     hintEl.style.color     = c;
   }
 
-  function getOverall() {
-    return (stage - 1) / 3 + progress / 3;
-  }
-
   // ---- COMPLETE ----
-  function showComplete(callback, restorePct = true) {
+  function showComplete(callback) {
     hideHint();
     pctEl.style.opacity      = '0';
     completeEl.style.opacity = '0';
@@ -82,7 +68,6 @@
         completeEl.style.opacity = '0';
         setTimeout(() => {
           completeEl.style.display = 'none';
-          if (restorePct) pctEl.style.opacity = '1';
           callback();
         }, 300);
       }, 500);
@@ -92,72 +77,15 @@
   // ---- イベント ----
   document.addEventListener('mousedown', e => {
     if (finished || completing || e.button !== 0) return;
-    if (stage === 1) progress = Math.min(1, progress + S1_GAIN);
-    if (stage === 2) holding = true;
-  });
-  document.addEventListener('mouseup', e => {
-    if (e.button !== 0) return;
-    if (stage === 2) holding = false;
+    progress = Math.min(1, progress + S1_GAIN);
   });
   document.addEventListener('touchstart', e => {
     if (finished || completing) return;
-    if (stage === 3) return;
     e.preventDefault();
-    if (stage === 1) progress = Math.min(1, progress + S1_GAIN);
-    if (stage === 2) holding = true;
+    progress = Math.min(1, progress + S1_GAIN);
   }, { passive: false });
-  document.addEventListener('touchend', () => {
-    if (stage === 3 && s3input) { s3input.focus(); }
-    if (stage === 2) holding = false;
-  }, { passive: true });
-  document.addEventListener('touchcancel', () => {
-    if (stage === 2) holding = false;
-  }, { passive: true });
 
-  // ---- ステージ遷移 ----
-  function transitionToStage3() {
-    stage = 3;
-    progress = 0;
-    pctEl.textContent = '0%';
-    pctEl.style.outline = 'none';
-    loader.style.touchAction = 'auto';
-
-    s3input = document.createElement('input');
-    s3input.type = 'tel';
-    s3input.setAttribute('inputmode', 'numeric');
-    s3input.setAttribute('autocomplete', 'off');
-    s3input.setAttribute('autocorrect', 'off');
-    s3input.setAttribute('autocapitalize', 'off');
-    s3input.style.cssText = [
-      'position:fixed', 'top:0', 'left:0',
-      'width:100vw', 'height:100vh',
-      'opacity:0.001',
-      'border:none', 'outline:none',
-      'background:transparent', 'color:transparent', 'caret-color:transparent',
-      'font-size:16px',
-      '-webkit-appearance:none', 'appearance:none',
-      'touch-action:auto', 'z-index:1'
-    ].join(';');
-    loader.appendChild(s3input);
-
-    s3input.addEventListener('input', function onInput() {
-      const raw = s3input.value;
-      const val = raw.replace(/\D/g, '');
-      if (raw !== val) s3input.value = val;
-      pctEl.textContent = (val || '0') + '%';
-      if (val === '100') {
-        s3input.removeEventListener('input', onInput);
-        s3input.blur();
-        s3input.remove();
-        s3input = null;
-        loader.style.touchAction = 'none';
-        stage3Success = true;
-      }
-    });
-
-    scheduleHint('入力', 2000);
-  }
-
+  // ---- finish ----
   function finish() {
     if (finished) return;
     finished = true;
@@ -212,52 +140,19 @@
     if (finished) return;
 
     if (!completing) {
-      if (stage === 1) {
-        if (progress >= 1) {
-          completing = true;
-          showComplete(() => {
-            progress   = 0;
-            stage      = 2;
-            completing = false;
-            scheduleHint('長押し', 6000);
-          });
-        } else {
-          progress = Math.max(0, progress - S1_DRAIN);
-          pctEl.textContent = Math.floor(progress * 100) + '%';
-        }
-      } else if (stage === 2) {
-        if (holding) {
-          progress += S2_FILL;
-          if (progress >= 1) {
-            progress   = 1;
-            completing = true;
-            pctEl.textContent = '100%';
-            showComplete(() => {
-              completing = false;
-              transitionToStage3();
-            });
-          }
-        } else {
-          progress = Math.max(0, progress - S2_DRAIN);
-        }
-        if (!completing) pctEl.textContent = Math.floor(progress * 100) + '%';
-      } else if (stage === 3) {
-        if (stage3Success) {
-          progress += 0.025;
-          if (progress >= 1) {
-            progress = 1;
-            applyProgress(1);
-            completing = true;
-            showComplete(() => {
-              completing = false;
-              finish();
-            }, false);
-          }
-        }
+      if (progress >= 1) {
+        completing = true;
+        showComplete(() => {
+          completing = false;
+          finish();
+        });
+      } else {
+        progress = Math.max(0, progress - S1_DRAIN);
+        pctEl.textContent = Math.floor(progress * 100) + '%';
       }
     }
 
-    applyProgress(getOverall());
+    applyProgress(progress);
     requestAnimationFrame(draw);
   }
 
