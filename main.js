@@ -122,9 +122,18 @@ const boxes = LABELS.map(label => {
             const rot = startRot + t * 720;
             const sc  = 1 + e * 28;
             el.style.transform = `translate(${x}px,${y}px) rotate(${rot}deg) scale(${sc})`;
-            if (zf < ZOOM) requestAnimationFrame(zoom);
-            else if (label === 'CONTACT') window.open(HREFS[label], '_blank');
-            else location.href = HREFS[label];
+            if (zf < ZOOM) { requestAnimationFrame(zoom); return; }
+            if (label === 'CONTACT') {
+              window.open(HREFS[label], '_blank');
+              box.frozen = false;
+              el.style.zIndex = '';
+              el.style.transition = 'transform 0.45s cubic-bezier(0.22,1,0.36,1)';
+              el.style.transform  = `translate(${box.x}px,${box.y}px) rotate(0deg) scale(1)`;
+              setTimeout(() => { el.style.transition = ''; }, 450);
+            } else {
+              document.documentElement.style.visibility = 'hidden';
+              location.href = HREFS[label];
+            }
           })();
         }
       })();
@@ -542,3 +551,8 @@ window.triggerEntryAnimation = function () {
 
   animateBoxes();
 };
+
+window.addEventListener('pageshow', e => {
+  document.documentElement.style.visibility = '';
+  if (e.persisted) location.reload();
+});
