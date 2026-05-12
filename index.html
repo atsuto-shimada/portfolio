@@ -19,7 +19,17 @@
 <div class="container">
     <span class="text"><span class="ch" data-action="invert">し</span><span class="ch" data-action="round">ま</span><span class="ch" data-action="xmarks">だ</span><span class="ch" data-action="music">あ</span><span class="ch" data-action="crush">つ</span><span class="ch" data-action="freeze">と</span>を知ろう</span>
   </div>
+  <div id="nav-cover" style="position:fixed;inset:0;background:#fff;z-index:99999;display:none;"></div>
   <script src="loader.js"></script>
   <script src="main.js"></script>
+  <script>
+    window.addEventListener('pagehide', function() {
+      document.getElementById('nav-cover').style.display = 'block';
+    });
+    window.addEventListener('pageshow', function(e) {
+      document.getElementById('nav-cover').style.display = 'none';
+      if (e.persisted) location.reload();
+    });
+  </script>
 </body>
 </html>
