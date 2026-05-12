@@ -123,6 +123,7 @@ const boxes = LABELS.map(label => {
             const sc  = 1 + e * 28;
             el.style.transform = `translate(${x}px,${y}px) rotate(${rot}deg) scale(${sc})`;
             if (zf < ZOOM) requestAnimationFrame(zoom);
+            else if (label === 'CONTACT') window.open(HREFS[label], '_blank');
             else location.href = HREFS[label];
           })();
         }
