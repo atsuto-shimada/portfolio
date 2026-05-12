@@ -183,11 +183,13 @@ function initBoxPositions() {
       box.y = Math.random() * (window.innerHeight - box.h);
     }
     box.el.style.transform = `translate(${box.x}px,${box.y}px) rotate(0deg) scale(1)`;
-    if (!window.__loaderActive) box.el.style.visibility = 'visible';
   });
 }
 
-document.fonts.ready.then(() => requestAnimationFrame(initBoxPositions));
+document.fonts.ready.then(() => requestAnimationFrame(() => {
+  initBoxPositions();
+  window.triggerEntryAnimation();
+}));
 
 
 function tick() {
@@ -485,16 +487,47 @@ tick();
 })();
 
 window.triggerEntryAnimation = function () {
-  // メインテキストをフェードイン
+  // テキストの文字を個別 span に分割してバラバラ集合アニメーション
   const textEl = document.querySelector('.text');
   if (textEl) {
-    requestAnimationFrame(() => {
-      textEl.style.transition = 'opacity 0.8s ease';
-      textEl.style.opacity = '1';
-      textEl.addEventListener('transitionend', () => {
-        textEl.style.transition = '';
-      }, { once: true });
+    Array.from(textEl.childNodes).forEach(node => {
+      if (node.nodeType !== Node.TEXT_NODE) return;
+      const chars = node.textContent.split('').filter(c => c.trim());
+      node.remove();
+      chars.forEach(char => {
+        const s = document.createElement('span');
+        s.textContent = char;
+        s.style.display = 'inline-block';
+        textEl.appendChild(s);
+      });
     });
+    textEl.querySelectorAll('span').forEach(s => { s.style.display = 'inline-block'; });
+
+    const matrix = new DOMMatrix(window.getComputedStyle(textEl).transform);
+    const sx = Math.abs(matrix.a) || 1;
+    const sy = Math.abs(matrix.d) || 1;
+    const allSpans = Array.from(textEl.querySelectorAll('span'));
+
+    allSpans.forEach(span => {
+      const rx = (Math.random() - 0.5) * (window.innerWidth  / sx) * 2.6;
+      const ry = (Math.random() - 0.5) * (window.innerHeight / sy) * 2.6;
+      const rr = (Math.random() - 0.5) * 360;
+      span.style.transform = `translate(${rx}px,${ry}px) rotate(${rr}deg)`;
+      span.style.opacity = '0';
+    });
+
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      allSpans.forEach((span, i) => {
+        setTimeout(() => {
+          span.style.transition = 'transform 0.65s cubic-bezier(0.22,1,0.36,1), opacity 0.35s ease';
+          span.style.transform  = 'none';
+          span.style.opacity    = '1';
+        }, i * 60);
+      });
+      setTimeout(() => {
+        allSpans.forEach(span => { span.style.transition = ''; });
+      }, allSpans.length * 60 + 700);
+    }));
   }
 
   function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
