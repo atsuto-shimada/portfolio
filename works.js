@@ -52,6 +52,18 @@
   document.addEventListener('mouseup',    () => { isDragging = false; });
   document.addEventListener('mouseleave', () => { isDragging = false; });
 
+  document.addEventListener('touchstart', e => {
+    if (e.target.closest('.work-item')) return;
+    isDragging = true;
+    lastDragX  = e.touches[0].clientX;
+  }, { passive: true });
+  document.addEventListener('touchmove', e => {
+    if (!isDragging) return;
+    rotY     += (e.touches[0].clientX - lastDragX) * 0.3;
+    lastDragX  = e.touches[0].clientX;
+  }, { passive: true });
+  document.addEventListener('touchend', () => { isDragging = false; });
+
   const ENTRY   = 160;
   const START_Y = -(window.innerHeight + 600);
   const END_Y   = -40;
@@ -72,6 +84,10 @@
     requestAnimationFrame(spin);
   })();
 })();
+
+window.addEventListener('pageshow', e => {
+  if (e.persisted) location.reload();
+});
 
 document.querySelector('.sub-nav a[href="index.html"]')?.addEventListener('click', e => {
   e.preventDefault();
