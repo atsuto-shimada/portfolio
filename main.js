@@ -1,3 +1,8 @@
+if (window.__loaderActive) {
+  const _t = document.querySelector('.text');
+  if (_t) _t.style.opacity = '0';
+}
+
 async function fitText() {
   await document.fonts.ready;
   const el = document.querySelector('.text');
@@ -168,7 +173,7 @@ function initBoxPositions() {
       box.y = Math.random() * (window.innerHeight - box.h);
     }
     box.el.style.transform = `translate(${box.x}px,${box.y}px) rotate(0deg) scale(1)`;
-    box.el.style.visibility = 'visible';
+    if (!window.__loaderActive) box.el.style.visibility = 'visible';
   });
 }
 
@@ -271,7 +276,7 @@ function tick() {
   }
 
   boxes.forEach(box => {
-    if (box.frozen) return;
+    if (box.frozen || box.entryAnimating) return;
     box.el.style.transform = `translate(${box.x + box.shakeX}px,${box.y + box.shakeY}px) rotate(${box.rotation}deg) scale(${box.scale})`;
   });
   requestAnimationFrame(tick);
@@ -468,3 +473,71 @@ tick();
     }
   }
 })();
+
+window.triggerEntryAnimation = function () {
+  // メインテキストをフェードイン
+  const textEl = document.querySelector('.text');
+  if (textEl) {
+    requestAnimationFrame(() => {
+      textEl.style.transition = 'opacity 0.8s ease';
+      textEl.style.opacity = '1';
+      textEl.addEventListener('transitionend', () => {
+        textEl.style.transition = '';
+      }, { once: true });
+    });
+  }
+
+  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+  function animateBoxes() {
+    if (!boxes[0] || !boxes[0].w) {
+      setTimeout(animateBoxes, 50);
+      return;
+    }
+
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    const bw = boxes[0].w;
+    const bh = boxes[0].h;
+
+    // 各 nav box の飛び込み出発点（左・上・右の3辺から）
+    const starts = [
+      { x: -bw - 300, y: h * 0.2 + Math.random() * h * 0.6, rot: -30 },
+      { x: w * 0.2 + Math.random() * w * 0.6, y: -bh - 300, rot: 25 },
+      { x: w + 300,   y: h * 0.2 + Math.random() * h * 0.6, rot: -20 },
+    ];
+
+    boxes.forEach((box, i) => {
+      const start = starts[i % starts.length];
+      const finalX = box.x;
+      const finalY = box.y;
+      const delay = i * 160;
+      const duration = 850;
+
+      box.entryAnimating = true;
+      box.el.style.transform = `translate(${start.x}px,${start.y}px) rotate(${start.rot}deg) scale(1)`;
+      box.el.style.visibility = 'visible';
+
+      setTimeout(() => {
+        const t0 = performance.now();
+        (function step(now) {
+          const p = Math.min((now - t0) / duration, 1);
+          const e = easeOutCubic(p);
+          const x = start.x + (finalX - start.x) * e;
+          const y = start.y + (finalY - start.y) * e;
+          const rot = start.rot * (1 - e);
+          box.el.style.transform = `translate(${x}px,${y}px) rotate(${rot}deg) scale(1)`;
+          if (p < 1) {
+            requestAnimationFrame(step);
+          } else {
+            box.x = finalX;
+            box.y = finalY;
+            box.entryAnimating = false;
+          }
+        })(performance.now());
+      }, delay);
+    });
+  }
+
+  animateBoxes();
+};
