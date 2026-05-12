@@ -149,13 +149,15 @@ window.__loaderActive = !sessionStorage.getItem('loaderDone');
     sessionStorage.setItem('loaderDone', '1');
 
     setTimeout(() => {
-      if (typeof window.triggerEntryAnimation === 'function') {
-        window.triggerEntryAnimation();
-      }
       overlay.style.transition = 'opacity 1s ease';
       overlay.style.opacity = '0';
       overlay.style.pointerEvents = 'none';
-      setTimeout(() => overlay.remove(), 1100);
+      setTimeout(() => {
+        overlay.remove();
+        if (typeof window.triggerEntryAnimation === 'function') {
+          window.triggerEntryAnimation();
+        }
+      }, 1100);
     }, 400);
   }
 

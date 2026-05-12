@@ -558,14 +558,15 @@ window.triggerEntryAnimation = function () {
     });
 
     requestAnimationFrame(() => requestAnimationFrame(() => {
-      allSpans.forEach(span => {
-        span.style.transition = 'transform 0.65s cubic-bezier(0.22,1,0.36,1), opacity 0.35s ease';
+      allSpans.forEach((span, i) => {
+        const delay = (i * 140 + Math.random() * 30).toFixed(0);
+        span.style.transition = `transform 1.3s cubic-bezier(0.22,1,0.36,1) ${delay}ms, opacity 0.7s ease ${delay}ms`;
         span.style.transform  = 'none';
         span.style.opacity    = '1';
       });
       setTimeout(() => {
         allSpans.forEach(span => { span.style.transition = ''; });
-      }, 750);
+      }, allSpans.length * 140 + 1400);
     }));
   }
 
@@ -602,7 +603,8 @@ window.triggerEntryAnimation = function () {
     });
   }
 
-  setTimeout(animateBoxes, 900);
+  const charCount = document.querySelectorAll('.text span').length;
+  setTimeout(animateBoxes, charCount * 140 + 1200);
 };
 
 window.addEventListener('pageshow', e => {
