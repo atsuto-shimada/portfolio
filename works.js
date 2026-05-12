@@ -35,30 +35,45 @@
     carousel.appendChild(a);
   });
 
-  let rotY = 0;
+  let rotY       = 0;
   let isDragging = false;
   let lastDragX  = 0;
+  let startDragX = 0;
+  let dragMoved  = false;
+  const DRAG_THRESHOLD = 6;
 
   document.addEventListener('mousedown', e => {
-    if (e.target.closest('.work-item') || e.target.closest('.back')) return;
+    if (e.target.closest('.back')) return;
     isDragging = true;
+    dragMoved  = false;
+    startDragX = e.clientX;
     lastDragX  = e.clientX;
   });
   document.addEventListener('mousemove', e => {
     if (!isDragging) return;
+    if (Math.abs(e.clientX - startDragX) > DRAG_THRESHOLD) dragMoved = true;
     rotY     += (e.clientX - lastDragX) * 0.3;
     lastDragX  = e.clientX;
   });
   document.addEventListener('mouseup',    () => { isDragging = false; });
   document.addEventListener('mouseleave', () => { isDragging = false; });
+  document.addEventListener('click', e => {
+    if (dragMoved && e.target.closest('.work-item')) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    dragMoved = false;
+  }, true);
 
   document.addEventListener('touchstart', e => {
-    if (e.target.closest('.work-item')) return;
     isDragging = true;
+    dragMoved  = false;
+    startDragX = e.touches[0].clientX;
     lastDragX  = e.touches[0].clientX;
   }, { passive: true });
   document.addEventListener('touchmove', e => {
     if (!isDragging) return;
+    if (Math.abs(e.touches[0].clientX - startDragX) > DRAG_THRESHOLD) dragMoved = true;
     rotY     += (e.touches[0].clientX - lastDragX) * 0.3;
     lastDragX  = e.touches[0].clientX;
   }, { passive: true });
