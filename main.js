@@ -503,14 +503,12 @@ window.triggerEntryAnimation = function () {
     });
     textEl.querySelectorAll('span').forEach(s => { s.style.display = 'inline-block'; });
 
-    const matrix = new DOMMatrix(window.getComputedStyle(textEl).transform);
-    const sx = Math.abs(matrix.a) || 1;
-    const sy = Math.abs(matrix.d) || 1;
     const allSpans = Array.from(textEl.querySelectorAll('span'));
+    const spread = Math.max(window.innerWidth, window.innerHeight) * 3;
 
     allSpans.forEach(span => {
-      const rx = (Math.random() - 0.5) * (window.innerWidth  / sx) * 2.6;
-      const ry = (Math.random() - 0.5) * (window.innerHeight / sy) * 2.6;
+      const rx = (Math.random() - 0.5) * spread;
+      const ry = (Math.random() - 0.5) * spread;
       const rr = (Math.random() - 0.5) * 360;
       span.style.transform = `translate(${rx}px,${ry}px) rotate(${rr}deg)`;
       span.style.opacity = '0';
